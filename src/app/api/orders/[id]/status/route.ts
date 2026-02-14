@@ -22,7 +22,12 @@ export async function PATCH(
     );
   }
 
-  const result = await updateOrderStatus(parseInt(id), status, role, {
+  const orderId = parseInt(id);
+  if (isNaN(orderId)) {
+    return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
+  }
+
+  const result = await updateOrderStatus(orderId, status, role, {
     driverName,
   });
 

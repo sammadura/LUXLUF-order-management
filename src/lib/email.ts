@@ -9,6 +9,14 @@ function getResend(): Resend {
   return _resend;
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 interface OrderEmailData {
   customerName: string;
   conciergeHotel: string;
@@ -28,15 +36,15 @@ export function buildDesignerEmailHtml(order: OrderEmailData): string {
   return `
     <div style="font-family: Georgia, serif; max-width: 600px; margin: 0 auto; padding: 24px;">
       <h1 style="color: #825d4a; border-bottom: 2px solid #e0d5c6; padding-bottom: 12px;">
-        New Order &mdash; ${order.customerName}
+        New Order &mdash; ${escapeHtml(order.customerName)}
       </h1>
       <table style="width: 100%; border-collapse: collapse;">
-        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Hotel/Concierge</td><td>${order.conciergeHotel}</td></tr>
-        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Product</td><td>${order.productDescription}</td></tr>
+        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Hotel/Concierge</td><td>${escapeHtml(order.conciergeHotel)}</td></tr>
+        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Product</td><td>${escapeHtml(order.productDescription)}</td></tr>
         <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Quantity</td><td>${order.quantity}</td></tr>
-        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Deliver To</td><td>${order.deliveryAddress}</td></tr>
+        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Deliver To</td><td>${escapeHtml(order.deliveryAddress)}</td></tr>
         <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Delivery Time</td><td>${order.deliveryTime.toLocaleString()}</td></tr>
-        ${order.specialInstructions ? `<tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Special Instructions</td><td style="color: #9c7258; font-style: italic;">${order.specialInstructions}</td></tr>` : ""}
+        ${order.specialInstructions ? `<tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Special Instructions</td><td style="color: #9c7258; font-style: italic;">${escapeHtml(order.specialInstructions)}</td></tr>` : ""}
       </table>
     </div>
   `;
@@ -51,17 +59,17 @@ export function buildReceptionistEmailHtml(
         Payment Received &mdash; Ready for Announcement
       </h1>
       <table style="width: 100%; border-collapse: collapse;">
-        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Customer</td><td>${order.customerName}</td></tr>
-        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Hotel/Concierge</td><td>${order.conciergeHotel}</td></tr>
+        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Customer</td><td>${escapeHtml(order.customerName)}</td></tr>
+        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Hotel/Concierge</td><td>${escapeHtml(order.conciergeHotel)}</td></tr>
         <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Amount</td><td>$${order.orderAmount}</td></tr>
-        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Delivery</td><td>${order.deliveryAddress} by ${order.deliveryTime.toLocaleString()}</td></tr>
+        <tr><td style="padding: 8px 0; color: #6a4d40; font-weight: bold;">Delivery</td><td>${escapeHtml(order.deliveryAddress)} by ${order.deliveryTime.toLocaleString()}</td></tr>
       </table>
       ${
         order.announcementText
           ? `
         <div style="margin-top: 24px; padding: 16px; background: #faf8f5; border-left: 4px solid #a98464;">
           <h3 style="color: #574136; margin-top: 0;">AI-Generated Announcement (review before sending)</h3>
-          <pre style="white-space: pre-wrap; font-family: Georgia, serif; color: #6a4d40;">${order.announcementText}</pre>
+          <pre style="white-space: pre-wrap; font-family: Georgia, serif; color: #6a4d40;">${escapeHtml(order.announcementText)}</pre>
         </div>
       `
           : ""

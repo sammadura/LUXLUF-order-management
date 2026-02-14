@@ -3,10 +3,17 @@ import { prisma } from "@/lib/prisma";
 import { validateOrderInput } from "@/lib/actions/orders";
 import { sendDesignerNotification } from "@/lib/email";
 import type { OrderStatus } from "@prisma/client";
+import { STATUS_LABELS } from "@/lib/types";
+
+const VALID_STATUSES = Object.keys(STATUS_LABELS) as OrderStatus[];
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const status = searchParams.get("status") as OrderStatus | null;
+  const statusParam = searchParams.get("status");
+  const status: OrderStatus | null =
+    statusParam && VALID_STATUSES.includes(statusParam as OrderStatus)
+      ? (statusParam as OrderStatus)
+      : null;
   const date = searchParams.get("date");
 
   const today = date ? new Date(date) : new Date();
