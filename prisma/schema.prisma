@@ -1,0 +1,40 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  SUBMITTED
+  IN_PREPARATION
+  PAYMENT_RECEIVED
+  ANNOUNCED
+  OUT_FOR_DELIVERY
+  DELIVERED
+}
+
+model Order {
+  id                  Int         @id @default(autoincrement())
+  customerName        String
+  contactInfo         String
+  conciergeHotel      String
+  productDescription  String
+  quantity            Int         @default(1)
+  deliveryAddress     String
+  deliveryTime        DateTime
+  specialInstructions String?
+  orderAmount         Decimal     @db.Decimal(10, 2)
+  status              OrderStatus @default(SUBMITTED)
+  driverName          String?
+  deliveryPhoto       String?
+  announcementText    String?
+  rawNotes            String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
