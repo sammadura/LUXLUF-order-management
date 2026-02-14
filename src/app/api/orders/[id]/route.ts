@@ -6,8 +6,13 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  const orderId = parseInt(id);
+  if (isNaN(orderId)) {
+    return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
+  }
+
   const order = await prisma.order.findUnique({
-    where: { id: parseInt(id) },
+    where: { id: orderId },
   });
 
   if (!order) {
