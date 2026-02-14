@@ -72,8 +72,10 @@ export default function OrderForm() {
       }
 
       router.push(`/orders/${data.order.id}`);
-    } catch {
-      setErrors(["Network error. Please try again."]);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Network error. Please try again.";
+      setErrors([message]);
     } finally {
       setSubmitting(false);
     }

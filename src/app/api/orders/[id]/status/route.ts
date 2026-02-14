@@ -7,33 +7,43 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
-  const body = await request.json();
-  const { status, role, driverName } = body as {
-    status: OrderStatus;
-    role: Role;
-    driverName?: string;
-  };
+  try {
+    const { id } = await params;
+    const body = await request.json();
+    const { status, role, driverName } = body as {
+      status: OrderStatus;
+      role: Role;
+      driverName?: string;
+    };
 
-  if (!status || !role) {
-    return NextResponse.json(
-      { error: "status and role are required" },
-      { status: 400 }
-    );
+    if (!status || !role) {
+      return NextResponse.json(
+        { error: "status and role are required" },
+        { status: 400 },
+      );
+    }
+
+    const orderId = parseInt(id);
+    if (isNaN(orderId)) {
+      return NextResponse.json(
+        { error: "Invalid order ID" },
+        { status: 400 },
+      );
+    }
+
+    const result = await updateOrderStatus(orderId, status, role, {
+      driverName,
+    });
+
+    if (!result.success) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Failed to update order status:", error);
+    const message =
+      error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
-
-  const orderId = parseInt(id);
-  if (isNaN(orderId)) {
-    return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
-  }
-
-  const result = await updateOrderStatus(orderId, status, role, {
-    driverName,
-  });
-
-  if (!result.success) {
-    return NextResponse.json({ error: result.error }, { status: 400 });
-  }
-
-  return NextResponse.json({ success: true });
 }
